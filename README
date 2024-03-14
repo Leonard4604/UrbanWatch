@@ -1,2 +1,0 @@
-# How to use the docker recompose to update image and container
-sh docker_recomposer.sh
