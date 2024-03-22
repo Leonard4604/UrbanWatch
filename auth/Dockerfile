@@ -1,13 +1,22 @@
 FROM python:3.6
 
+WORKDIR /auth
+
+ENV PYTHONDONTWRITEBYTECODE 1
+
 # Update the package lists
 RUN apt-get update
 
-COPY . /authentication
+ENV FLASK_APP=server.py
 
-WORKDIR /authentication
+ENV FLASK_ENV=development
 
-# Install the dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+COPY ./requirements.txt ./requirements.txt
 
-CMD ["python", "auth.py"]
+COPY . .
+
+RUN pip install -r requirements.txt
+
+EXPOSE 5175
+
+CMD ["python", "server.py"]

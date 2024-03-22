@@ -1,3 +1,9 @@
 psycopg2
 sqlalchemy
 faker
+flask
+flask-cors
+flask-sqlalchemy
+flask-login
+path
+flask-jwt-extended

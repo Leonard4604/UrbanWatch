@@ -1,3 +1,4 @@
-docker rm $(docker ps -a --filter "name=urbanwatch-frontend-1" --format "{{.ID}}")
-docker rmi urbanwatch-frontend
-docker compose up
+docker compose down
+docker rmi urbanwatch-frontend urbanwatch-auth # postgres:14 dpage/pgadmin4
+docker volume rm urbanwatch_pgadmin urbanwatch_pgdata
+docker compose up -d
