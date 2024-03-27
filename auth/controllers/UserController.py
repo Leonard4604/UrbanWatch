@@ -24,10 +24,11 @@ def login():
     # create a token
     access_token = create_access_token(identity=email)
 
-    return jsonify({"message": "Welcome back" + user.name + "!",
+    return jsonify({"message": "Welcome back" + user.firstName + "!",
                     "id": user.id,
                     "email": user.email,
-                    "name": user.name,
+                    "firstName": user.firstName,
+                    "lastName": user.lastName,
                     "access_token": access_token}), 200
 
 
@@ -41,7 +42,8 @@ def checkToken():
 
 def signup():
     email = request.json['email']
-    name = request.json['name']
+    firstName = request.json['firstName']
+    lastName = request.json['lastName']
     password = request.json['password']
 
     # if this returns a user, then the email already exists in database
@@ -51,7 +53,7 @@ def signup():
         return jsonify({"message": "Email already exist!"}), 400
 
     # create a new user with the form data. Hash the password so the plaintext version isn't saved.
-    new_user = User(email=email, name=name,
+    new_user = User(email=email, firstName=firstName, lastName=lastName,
                     password=generate_password_hash(password, method='sha256'))
 
     # add the new user to the database
@@ -107,7 +109,8 @@ def get_user_by_email(email):
 
 def update_user(user_id):
     new_email = request.json['email']
-    new_name = request.json['name']
+    new_firstName = request.json['firstName']
+    new_lastName = request.json['lastName']
     new_password = request.json['password']
     old_password_plaintext = request.json['oldPassword']
     try:
@@ -126,8 +129,10 @@ def update_user(user_id):
 
         if new_email != '':
             user.email = new_email
-        if new_name != '':
-            user.name = new_name
+        if new_firstName != '':
+            user.firstName = new_firstName
+        if new_lastName != '':
+            user.lastName = new_lastName
         if new_password != '':
             user.password = generate_password_hash(
                 new_password, method='sha256')

@@ -10,16 +10,18 @@ class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(100), unique=True)
     password = db.Column(db.String(100))
-    name = db.Column(db.String(1000))
+    firstName = db.Column(db.String(1000))
+    lastName = db.Column(db.String(1000))
     role = db.Column(db.Integer, default=0)
 
     def __repr__(self):
-        return f"User: {self.id, self.email, self.name, self.password, self.role}"
+        return f"User: {self.id, self.email, self.firstName, self.lastName, self.password, self.role}"
 
-    def __init__(self, email, password, name):
+    def __init__(self, email, password, firstName, lastName):
         self.email = email
         self.password = password
-        self.name = name
+        self.firstName = firstName
+        self.lastName = lastName
 
     @property
     def serialize(self):
@@ -27,6 +29,7 @@ class User(db.Model, UserMixin):
             "id": self.id,
             "email": self.email,
             "password": self.password,
-            "name": self.name,
+            "firstName": self.firstName,
+            "lastName": self.lastName,
             "role": self.role
         }
