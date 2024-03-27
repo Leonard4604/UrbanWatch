@@ -13,7 +13,7 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import BasicModal from '../components/BasicModal';
 import { useContext } from 'react';
-import { Context } from '../hooks/appContext';
+import { Context } from '../store/appContext';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 
