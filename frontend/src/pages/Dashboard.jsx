@@ -14,16 +14,14 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import { mainListItems } from '../components/listItems';
 import Menu from '@mui/material/Menu';
 import Badge from '@mui/material/Badge';
-import MailIcon from '@mui/icons-material/Mail';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import MenuItem from '@mui/material/MenuItem';
 import MoreIcon from '@mui/icons-material/MoreVert';
 import { Context } from '../store/appContext';
 import { useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
-const MESSAGES_COUNT = 0;
 const NOTIFICATIONS_COUNT = 0;
 
 const drawerWidth = 240;
@@ -129,7 +127,7 @@ export default function Dashboard() {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
+      <MenuItem onClick={handleMenuClose} component={Link} to="/profile">Profile</MenuItem>
       <MenuItem onClick={handleLogout}>Logout</MenuItem>
     </Menu>
   );
@@ -151,14 +149,6 @@ export default function Dashboard() {
       open={isMobileMenuOpen}
       onClose={handleMobileMenuClose}
     >
-      <MenuItem>
-        <IconButton size="large" aria-label="show 4 new mails" color="inherit">
-          <Badge badgeContent={MESSAGES_COUNT} color="error">
-            <MailIcon />
-          </Badge>
-        </IconButton>
-        <p>Messages</p>
-      </MenuItem>
       <MenuItem>
         <IconButton
           size="large"
@@ -218,11 +208,6 @@ export default function Dashboard() {
               Dashboard
             </Typography>
             <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-              <IconButton size="large" aria-label="show 4 new mails" color="inherit">
-                <Badge badgeContent={MESSAGES_COUNT} color="error">
-                  <MailIcon />
-                </Badge>
-              </IconButton>
               <IconButton
                 size="large"
                 aria-label="show 17 new notifications"
