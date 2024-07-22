@@ -15,7 +15,7 @@ def submit_report():
     latitude = request.json['latitude']
 
     # if this returns a report, then the report already exists in database
-    report = Report.query.filter_by(email=email, title=title, body=body, category=category, longitude=longitude, latitude=latitude).first()
+    report = Report.query.filter_by(email=email, firstName=firstName, lastName=lastName, role=role, title=title, body=body, category=category).first()
 
     if report:  # if a report is found, we want to notify it
         return jsonify({"message": "Report already exist!"}), 400
