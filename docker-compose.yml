@@ -41,6 +41,18 @@ services:
     env_file:
       - path: .env
 
+  report:
+    restart: unless-stopped
+    build: ./report
+    volumes:
+      - ./report:/report
+    ports:
+      - 5176:5176
+    depends_on:
+      - postgres
+    env_file:
+      - path: .env
+
 volumes:
   pgdata: {}
   pgadmin: {}
