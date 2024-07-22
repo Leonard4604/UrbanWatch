@@ -12,6 +12,7 @@ import injectContext, { Context } from './store/appContext';
 import NotFound from './pages/NotFound';
 import Dashboard from './pages/Dashboard';
 import Map from './pages/Map';
+import Profile from './pages/Profile';
 
 function App() {
   const { store } = useContext(Context);
@@ -32,6 +33,7 @@ function App() {
             <Route path="/signin" element={<Dashboard />} />
             <Route path="/signup" element={<Dashboard />} />
             <Route path="/map" element={<Map />} />
+            <Route path="/profile" element={<Profile />} />
           </>
         }
         <Route path="*" element={<NotFound />} />
