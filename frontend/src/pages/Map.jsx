@@ -5,7 +5,6 @@ import MuiDrawer from '@mui/material/Drawer';
 import Box from '@mui/material/Box';
 import MuiAppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
-import List from '@mui/material/List';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
@@ -21,9 +20,9 @@ import MoreIcon from '@mui/icons-material/MoreVert';
 import { Context } from '../store/appContext';
 import { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import Map from '../components/Map';
-
-const NOTIFICATIONS_COUNT = 0;
+import MapComponent from '../components/Map';
+import { useEffect, useState } from 'react';
+import { List, ListItem, ListItemText, Popover } from '@mui/material';
 
 const drawerWidth = 240;
 
@@ -74,7 +73,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 // TODO remove, this demo shouldn't need to reset the theme.
 const defaultTheme = createTheme();
 
-export default function Dashboard() {
+export default function Map() {
   const { actions } = useContext(Context);
   const navigate = useNavigate();
 
@@ -106,6 +105,44 @@ export default function Dashboard() {
     setMobileMoreAnchorEl(event.currentTarget);
   };
 
+  const [anchorNotificationsEl, setNotificationsAnchorEl] = React.useState(null);
+  const [mobileNotificationsMoreAnchorEl, setNotificationsMobileMoreAnchorEl] = React.useState(null);
+  
+  const isNotificationsMenuOpen = Boolean(anchorNotificationsEl);
+  const isNotificationsMobileMenuOpen = Boolean(mobileNotificationsMoreAnchorEl);
+
+  const [notificationsCount, setNotificationsCount] = useState(0);
+
+  const getNotifications = async () => {
+    const response = await fetch('http://localhost:5177/notifications/');
+    const data = await response.json();
+    const notificationsList = data.notifications.map(notification => (
+      <ListItem key={notification.id}>
+        <ListItemText primary={notification.title} />
+      </ListItem>
+    ));
+    setNotifications(notificationsList);
+    setNotificationsCount(data.notifications.length);
+  };
+
+  const handleNotificationsMenuOpen = async (event) => {
+    setNotificationsAnchorEl(event.currentTarget);
+    await getNotifications();
+  };
+
+  const handleNotificationsMobileMenuClose = () => {
+    setNotificationsMobileMoreAnchorEl(null);
+  };
+
+  const handleNotificationsMenuClose = () => {
+    setNotificationsAnchorEl(null);
+    handleNotificationsMobileMenuClose();
+  };
+
+  const handleNotificationsMobileMenuOpen = (event) => {
+    setNotificationsMobileMoreAnchorEl(event.currentTarget);
+  };
+
   const handleLogout = () => {
     actions.logout();
     navigate('/signin');
@@ -133,6 +170,42 @@ export default function Dashboard() {
     </Menu>
   );
 
+  const [notifications, setNotifications] = useState([]);
+  useEffect(() => {
+    const getNotifications = async () => {
+      const response = await fetch('http://localhost:5177/notifications/');
+      const data = await response.json();
+      const notificationsList = data.notifications.map(notification => (
+        <MenuItem key={notification.id}>{notification.title}</MenuItem>
+      ));
+      setNotifications(notificationsList);
+      setNotificationsCount(data.notifications.length);
+    };
+    getNotifications();
+  }, []);
+
+  const notificationsMenuId = 'primary-search-notifications-menu';
+  const renderNotificationsMenu = (
+    <Popover
+      id={notificationsMenuId}
+      open={isNotificationsMenuOpen}
+      anchorEl={anchorNotificationsEl}
+      onClose={handleNotificationsMenuClose}
+      anchorOrigin={{
+        vertical: 'top',
+        horizontal: 'right',
+      }}
+      transformOrigin={{
+        vertical: 'top',
+        horizontal: 'right',
+      }}
+    >
+      <List>
+        {notifications}
+      </List>
+    </Popover>
+  );
+
   const mobileMenuId = 'primary-search-account-menu-mobile';
   const renderMobileMenu = (
     <Menu
@@ -150,13 +223,15 @@ export default function Dashboard() {
       open={isMobileMenuOpen}
       onClose={handleMobileMenuClose}
     >
-      <MenuItem>
+      <MenuItem onClick={handleNotificationsMenuOpen}>
         <IconButton
           size="large"
           aria-label="show 17 new notifications"
+          aria-controls="primary-search-notifications-menu"
+          aria-haspopup="true"
           color="inherit"
         >
-          <Badge badgeContent={NOTIFICATIONS_COUNT} color="error">
+          <Badge badgeContent={notificationsCount} color="error">
             <NotificationsIcon />
           </Badge>
         </IconButton>
@@ -212,9 +287,12 @@ export default function Dashboard() {
               <IconButton
                 size="large"
                 aria-label="show 17 new notifications"
+                aria-controls={notificationsMenuId}
+                aria-haspopup="true"
+                onClick={handleNotificationsMenuOpen}
                 color="inherit"
               >
-                <Badge badgeContent={NOTIFICATIONS_COUNT} color="error">
+                <Badge badgeContent={notificationsCount} color="error">
                   <NotificationsIcon />
                 </Badge>
               </IconButton>
@@ -245,6 +323,7 @@ export default function Dashboard() {
           </Toolbar>
           {renderMobileMenu}
           {renderMenu}
+          {renderNotificationsMenu}
         </AppBar>
         <Drawer variant="permanent" open={open}>
           <Toolbar
@@ -277,7 +356,7 @@ export default function Dashboard() {
           }}
         >
           <Toolbar />
-          <Map isOpen={open} />
+          <MapComponent isOpen={open} />
         </Box>
       </Box>
     </ThemeProvider>

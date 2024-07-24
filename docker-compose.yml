@@ -53,6 +53,18 @@ services:
     env_file:
       - path: .env
 
+  notification:
+    restart: unless-stopped
+    build: ./notification
+    volumes:
+      - ./notification:/notification
+    ports:
+      - 5177:5177
+    depends_on:
+      - postgres
+    env_file:
+      - path: .env
+
 volumes:
   pgdata: {}
   pgadmin: {}
