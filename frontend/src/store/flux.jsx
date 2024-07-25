@@ -1,4 +1,4 @@
-const BACKEND_URL = "http://localhost:5175"
+const BACKEND_URL = `http://${process.env.IP_ADDRESS}:5175`
 
 const getState = ({ getStore, getActions, setStore }) => {
 	return {

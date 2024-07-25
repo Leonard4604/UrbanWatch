@@ -42,7 +42,7 @@ export default function SignUp() {
     const [smShow, setSmShow] = useState(false)
     const [textModal, setTextModal] = useState(null)
     const [showLoginButton, setShowLoginButton] = useState(true)
-    const url = 'http://localhost:5175/users/signup';
+    const url = `http://${process.env.IP_ADDRESS}:5175/users/signup`;
 
     const [errors, setErrors] = useState({});
 

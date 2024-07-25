@@ -114,7 +114,7 @@ export default function Map() {
   const [notificationsCount, setNotificationsCount] = useState(0);
 
   const getNotifications = async () => {
-    const response = await fetch('http://localhost:5177/notifications/');
+    const response = await fetch(`http://${process.env.IP_ADDRESS}:5177/notifications/`);
     const data = await response.json();
     const notificationsList = data.notifications.map(notification => (
       <ListItem key={notification.id}>
@@ -173,7 +173,7 @@ export default function Map() {
   const [notifications, setNotifications] = useState([]);
   useEffect(() => {
     const getNotifications = async () => {
-      const response = await fetch('http://localhost:5177/notifications/');
+      const response = await fetch(`http://${process.env.IP_ADDRESS}:5177/notifications/`);
       const data = await response.json();
       const notificationsList = data.notifications.map(notification => (
         <MenuItem key={notification.id}>{notification.title}</MenuItem>

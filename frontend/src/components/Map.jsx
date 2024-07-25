@@ -20,7 +20,7 @@ function Map({ isOpen }) {
     
         mapRef.current.on('load', async () => {
             mapRef.current.resize();
-            await fetch('http://localhost:5176/reports/').then(response => response.json()).then(data => {
+            await fetch(`http://${process.env.IP_ADDRESS}:5176/reports/`).then(response => response.json()).then(data => {
               let features = [];
                 data.reports.forEach(report => {
                 features.push({
