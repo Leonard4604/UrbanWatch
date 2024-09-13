@@ -2,9 +2,8 @@ services:
   frontend:
     build: ./frontend
     ports:
-    - "5173:5173"
-    env_file:
-      - path: .env
+      - "5173:5173"
+    env_file: .env  # Corrected
 
   postgres:
     image: postgres:14
@@ -40,8 +39,7 @@ services:
       - 5175:5175
     depends_on:
       - postgres
-    env_file:
-      - path: .env
+    env_file: .env  # Corrected
 
   report:
     restart: unless-stopped
@@ -52,8 +50,7 @@ services:
       - 5176:5176
     depends_on:
       - postgres
-    env_file:
-      - path: .env
+    env_file: .env  # Corrected
 
   notification:
     restart: unless-stopped
@@ -64,8 +61,7 @@ services:
       - 5177:5177
     depends_on:
       - postgres
-    env_file:
-      - path: .env
+    env_file: .env  # Corrected
 
 volumes:
   pgdata: {}

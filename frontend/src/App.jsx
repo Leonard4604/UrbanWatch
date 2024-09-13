@@ -13,6 +13,7 @@ import NotFound from './pages/NotFound';
 import Dashboard from './pages/Dashboard';
 import Map from './pages/Map';
 import Profile from './pages/Profile';
+import Reports from './pages/Reports';
 
 function App() {
   const { store } = useContext(Context);
@@ -33,6 +34,7 @@ function App() {
             <Route path="/signin" element={<Dashboard />} />
             <Route path="/signup" element={<Dashboard />} />
             <Route path="/map" element={<Map />} />
+            <Route path="/reports" element={<Reports />} />
             <Route path="/profile" element={<Profile />} />
           </>
         }

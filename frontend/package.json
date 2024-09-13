@@ -1,5 +1,6 @@
 {
   "name": "frontend",
+  "proxy": "http://127.0.0.1:5176",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -31,6 +32,8 @@
     "eslint-plugin-react": "^7.34.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
-    "vite": "^5.1.6"
+    "vite": "^5.4.3"
   }
 }
+
+

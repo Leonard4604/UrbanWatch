@@ -19,10 +19,10 @@ import MenuItem from '@mui/material/MenuItem';
 import MoreIcon from '@mui/icons-material/MoreVert';
 import { Context } from '../store/appContext';
 import { useContext } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import MapComponent from '../components/Map';
+import { useNavigate, Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { List, ListItem, ListItemText, Popover } from '@mui/material';
+import DisplayReports from '../components/DisplayReports'
 
 const drawerWidth = 240;
 
@@ -73,7 +73,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 // TODO remove, this demo shouldn't need to reset the theme.
 const defaultTheme = createTheme();
 
-export default function Map() {
+export default function Reports() {
   const { actions } = useContext(Context);
   const navigate = useNavigate();
 
@@ -356,7 +356,7 @@ export default function Map() {
           }}
         >
           <Toolbar />
-          <MapComponent />
+          <DisplayReports />
         </Box>
       </Box>
     </ThemeProvider>
