@@ -1,5 +1,4 @@
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
 
 db = SQLAlchemy()
 
@@ -14,8 +13,8 @@ class Report(db.Model):
     title = db.Column(db.String(1000))
     body = db.Column(db.String(1000))
     category = db.Column(db.String(1000))
-    longitude = db.Column(db.Float(precision=6))
-    latitude = db.Column(db.Float(precision=6))
+    longitude = db.Column(db.Float(precision=14))
+    latitude = db.Column(db.Float(precision=14))
 
     def __repr__(self):
         return f"Report: {self.id, self.email, self.firstName, self.lastName, self.role, self.title, self.body, self.category, self.longitude, self.latitude}"

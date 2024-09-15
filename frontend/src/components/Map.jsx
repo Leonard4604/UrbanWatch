@@ -8,15 +8,16 @@ function Map() {
     const markerRef = useRef(null); // Store the current marker
     const [showSidebar, setShowSidebar] = useState(false);
     const [formData, setFormData] = useState({
-        email: '',
+        email: 'simo@pascu.test',
         firstName: 'simo',
         lastName: 'pascu',
         role: '1',  // Hidden field with default value 1
         title: '',
-        body: 'buca',
+        body: '', // This will be used for the address
         category: '',
         latitude: '',
-        longitude: ''
+        longitude: '',
+        dateTime: '', // New field for the date and time
     });
     const url = 'http://localhost:5176/reports/submit';
 
@@ -33,14 +34,15 @@ function Map() {
         mapRef.current.addControl(new mapboxgl.NavigationControl());
 
         // Map click event to place marker and open sidebar
-        mapRef.current.on('click', (e) => {
+        mapRef.current.on('click', async (e) => {
             const lngLat = e.lngLat;
 
             setShowSidebar(true);  // Show the sidebar
             setFormData((prev) => ({
                 ...prev,
                 latitude: lngLat.lat,
-                longitude: lngLat.lng
+                longitude: lngLat.lng,
+                dateTime: new Date().toLocaleString(), // Auto-fill date and time
             }));
 
             // Remove any existing marker
@@ -52,6 +54,25 @@ function Map() {
             markerRef.current = new mapboxgl.Marker()
                 .setLngLat([lngLat.lng, lngLat.lat])
                 .addTo(mapRef.current);
+
+            // Reverse geocode to get the address
+            try {
+                const response = await fetch(
+                    `https://api.mapbox.com/geocoding/v5/mapbox.places/${lngLat.lng},${lngLat.lat}.json?access_token=${mapboxgl.accessToken}`
+                );
+                const data = await response.json();
+                const place = data.features[0]?.place_name || 'Unknown location';
+                setFormData((prev) => ({
+                    ...prev,
+                    body: place // Set address in body
+                }));
+            } catch (error) {
+                console.error('Error fetching address:', error);
+                setFormData((prev) => ({
+                    ...prev,
+                    body: 'Failed to retrieve address' // Set fallback text in body
+                }));
+            }
         });
 
         return () => {
@@ -83,26 +104,35 @@ function Map() {
                 lastName: formData.lastName,
                 role: formData.role,
                 title: formData.title,
-                body: formData.body,
+                body: formData.body, // Include the address in body
                 category: formData.category,
-                lat: formData.latitude,
-                lon: formData.longitude
+                latitude: formData.latitude,
+                longitude: formData.longitude,
+                dateTime: formData.dateTime, // Include the date and time
             });
-    
+
             // Make the API request
             const response = await fetch(url, {
                 method: 'POST', // Ensure this is correct based on backend
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData),
+                body: JSON.stringify({
+                    email: formData.email,
+                    firstName: formData.firstName,
+                    lastName: formData.lastName,
+                    role: formData.role,
+                    title: formData.title,
+                    body: formData.body, // Send address as body
+                    category: formData.category,
+                    latitude: formData.latitude,
+                    longitude: formData.longitude
+                }),
             });
-    
-            // Check the response status and throw if not successful
+
             if (!response.ok) {
                 const errorText = await response.text();  // Get detailed error message from backend
                 throw new Error(`Failed to submit report: ${response.status} - ${errorText}`);
             }
-    
-            // Success - Show alert and reset form
+
             alert('Report submitted successfully!');
             setFormData({
                 email: '',
@@ -110,16 +140,17 @@ function Map() {
                 lastName: '',
                 role: '1',  // Reset role to default value 1
                 title: '',
-                body: '',
+                body: '', // Reset body field
                 category: '',
                 latitude: '',
-                longitude: ''
+                longitude: '',
+                dateTime: ''
             });
-    
+
             setShowSidebar(false);  // Hide the sidebar
         } catch (error) {
-            console.error('Error submitting report:', error);  // Log detailed error
-            alert(`Failed to submit report: ${error.message}`);  // Show detailed alert
+            console.error('Error submitting report:', error);
+            alert(`Failed to submit report: ${error.message}`);
         }
     };
 
@@ -154,7 +185,6 @@ function Map() {
                         zIndex: 1
                     }}
                 >
-                    <h4>Report an Issue</h4>
                     <form onSubmit={handleSubmit}>
                         {/* Email Field */}
                         <div style={{ marginBottom: '10px' }}>
@@ -198,53 +228,21 @@ function Map() {
                             />
                         </div>
 
-                        {/* Role Field (Hidden) */}
-                        <div style={{ display: 'none' }}>
-                            <label htmlFor="role">Role:</label>
-                            <input
-                                type="number"
-                                id="role"
-                                name="role"
-                                value={formData.role}
-                                onChange={handleInputChange}
-                                required
-                            />
-                        </div>
-
-                        {/* Title Field (Select Menu) */}
+                        {/* Title Field */}
                         <div style={{ marginBottom: '10px' }}>
                             <label htmlFor="title">Title:</label>
-                            <select
+                            <input
                                 id="title"
                                 name="title"
+                                type='text'
                                 value={formData.title}
                                 onChange={handleInputChange}
                                 required
                                 style={{ width: '100%', padding: '5px' }}
-                            >
-                                <option value="" disabled>Select an issue</option>
-                                <option value="Road Damage">Road Damage</option>
-                                <option value="Pothole">Pothole</option>
-                                <option value="Street Light Outage">Street Light Outage</option>
-                                <option value="Flooding">Flooding</option>
-                                <option value="Graffiti">Graffiti</option>
-                            </select>
-                        </div>
-
-                        {/* Problem Description (Body) */}
-                        <div style={{ marginBottom: '10px' }}>
-                            <label htmlFor="body">Problem Description:</label>
-                            <textarea
-                                id="body"
-                                name="body"
-                                value={formData.body}
-                                onChange={handleInputChange}
-                                required
-                                style={{ width: '100%', padding: '5px', height: '80px' }}
                             />
                         </div>
 
-                        {/* Category Field (Select Menu) */}
+                        {/* Category Field */}
                         <div style={{ marginBottom: '10px' }}>
                             <label htmlFor="category">Category:</label>
                             <select
@@ -256,15 +254,29 @@ function Map() {
                                 style={{ width: '100%', padding: '5px' }}
                             >
                                 <option value="" disabled>Select a category</option>
-                                <option value="Road">Road</option>
-                                <option value="Sidewalk">Sidewalk</option>
-                                <option value="Building">Building</option>
-                                <option value="Park">Park</option>
-                                <option value="Utility">Utility</option>
+                                <option value="Road Damage">Road Damage</option>
+                                <option value="Pothole">Pothole</option>
+                                <option value="Street Light Outage">Street Light Outage</option>
+                                <option value="Flooding">Flooding</option>
+                                <option value="Graffiti">Graffiti</option>
+                                <option value="Other">Other</option>
                             </select>
                         </div>
 
-                        {/* Latitude and Longitude Fields (Read-only) */}
+                        {/* Address Field */}
+                        <div style={{ marginBottom: '10px' }}>
+                            <label htmlFor="body">Address:</label>
+                            <input
+                                type="text"
+                                id="body"
+                                name="body"
+                                value={formData.body}
+                                readOnly
+                                style={{ width: '100%', padding: '5px' }}
+                            />
+                        </div>
+
+                        {/* Latitude Field */}
                         <div style={{ marginBottom: '10px' }}>
                             <label htmlFor="latitude">Latitude:</label>
                             <input
@@ -276,6 +288,8 @@ function Map() {
                                 style={{ width: '100%', padding: '5px' }}
                             />
                         </div>
+
+                        {/* Longitude Field */}
                         <div style={{ marginBottom: '10px' }}>
                             <label htmlFor="longitude">Longitude:</label>
                             <input
@@ -288,28 +302,62 @@ function Map() {
                             />
                         </div>
 
+                        {/* Date and Time Field */}
+                        <div style={{ marginBottom: '10px' }}>
+                            <label htmlFor="dateTime">Date and Time:</label>
+                            <input
+                                type="text"
+                                id="dateTime"
+                                name="dateTime"
+                                value={formData.dateTime}
+                                readOnly
+                                style={{ width: '100%', padding: '5px' }}
+                            />
+                        </div>
+
                         {/* Submit Button */}
                         <button
                             type="submit"
                             style={{
-                                padding: '5px 10px',
-                                backgroundColor: '#007FFF',
+                                padding: '10px 20px', // Add padding for better appearance
+                                marginRight: '10px',
+                                backgroundColor: '#007bff',
                                 color: 'white',
                                 border: 'none',
-                                borderRadius: '5px'
+                                borderRadius: '8px', // Rounded corners
+                                boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)', // Subtle shadow
+                                cursor: 'pointer',
+                                fontSize: '16px', // Slightly larger font size
+                                transition: 'background-color 0.3s, box-shadow 0.3s' // Smooth transition for hover effects
                             }}
+                            onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#0056b3'} // Darker blue on hover
+                            onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#007bff'} // Original blue color
                         >
-                            Report
+                            Submit Report
                         </button>
-                    </form>
 
-                    {/* Close Sidebar Button */}
-                    <button
-                        onClick={closeSidebar}
-                        style={{ position: 'absolute', top: '10px', right: '10px', cursor: 'pointer' }}
-                    >
-                        X
-                    </button>
+                        {/* Close Button */}
+                        <button
+                            type="button"
+                            onClick={closeSidebar}
+                            style={{
+                                padding: '10px 20px', // Add padding for better appearance
+                                backgroundColor: '#f44336',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '8px', // Rounded corners
+                                boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)', // Subtle shadow
+                                cursor: 'pointer',
+                                fontSize: '16px', // Slightly larger font size
+                                transition: 'background-color 0.3s, box-shadow 0.3s' // Smooth transition for hover effects
+                            }}
+                            onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#d32f2f'} // Darker red on hover
+                            onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#f44336'} // Original red color
+                        >
+                            Close
+                        </button>
+
+                    </form>
                 </div>
             )}
         </div>

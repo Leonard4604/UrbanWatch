@@ -4,6 +4,7 @@ import { List, ListItem, ListItemText, Typography, Paper, Button, Divider } from
 export default function DisplayReports() {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showDetails, setShowDetails] = useState({});
 
   useEffect(() => {
     const fetchReports = async () => {
@@ -12,6 +13,7 @@ export default function DisplayReports() {
         const data = await response.json();
         setReports(data.reports);
         setLoading(false);
+        console.log(data.reports); // Debugging: Log fetched reports
       } catch (error) {
         console.error('Error fetching reports:', error);
         setLoading(false);
@@ -20,6 +22,13 @@ export default function DisplayReports() {
 
     fetchReports();
   }, []);
+
+  const toggleDetails = (reportId) => {
+    setShowDetails(prevState => ({
+      ...prevState,
+      [reportId]: !prevState[reportId]
+    }));
+  };
 
   const deleteReport = async (reportId) => {
     try {
@@ -38,14 +47,12 @@ export default function DisplayReports() {
 
   const deleteAllReports = async () => {
     try {
-      // Delete reports one by one
       for (const report of reports) {
         await fetch(`http://${process.env.IP_ADDRESS}:5176/reports/${report.id}`, {
           method: 'DELETE',
         });
       }
-      // Clear reports state after deletion
-      setReports([]);
+      setReports([]);  // Clear the reports after deletion
     } catch (error) {
       console.error('Error deleting all reports:', error);
     }
@@ -73,16 +80,31 @@ export default function DisplayReports() {
                   primary={`Title: ${report.title}`}
                   secondary={
                     <>
-                      <div>Problem: {report.body}</div>
-                      <div>Category: {report.category}</div>
-                      <div>Location: ({report.latitude}, {report.longitude})</div>
-                      <div>Email: {report.email}</div>
-                      <div>First Name: {report.firstName}</div>
-                      <div>Last Name: {report.lastName}</div>
-                      <div>Role: {report.role}</div>
+                      <Typography component="span">Category: {report.category}</Typography>
+                      <br />
+                      <Typography component="span">Address: {report.body}</Typography>
+                      <br />
+                      {showDetails[report.id] ? (
+                        <>
+                          <Typography component="span">Location: ({report.latitude}, {report.longitude})</Typography>
+                          <br />
+                          <Typography component="span">Email: {report.email}</Typography>
+                          <br />
+                          <Typography component="span">First Name: {report.firstName}</Typography>
+                          <br />
+                          <Typography component="span">Last Name: {report.lastName}</Typography>
+                        </>
+                      ) : null}
                     </>
                   }
                 />
+                <Button
+                  onClick={() => toggleDetails(report.id)}
+                  variant="contained"
+                  style={{ marginLeft: '10px' }}
+                >
+                  {showDetails[report.id] ? 'Hide Details' : 'Show Details'}
+                </Button>
                 <Button
                   onClick={() => deleteReport(report.id)}
                   variant="contained"
@@ -97,6 +119,7 @@ export default function DisplayReports() {
           ))}
         </List>
       )}
+      {/* Button to delete all reports */}
       {reports.length > 0 && (
         <Button
           onClick={deleteAllReports}
