@@ -281,7 +281,7 @@ export default function Map() {
               noWrap
               sx={{ flexGrow: 1 }}
             >
-              Dashboard
+              Map
             </Typography>
             <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
               <IconButton

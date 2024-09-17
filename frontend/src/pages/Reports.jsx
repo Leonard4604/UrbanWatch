@@ -281,7 +281,7 @@ export default function Reports() {
               noWrap
               sx={{ flexGrow: 1 }}
             >
-              Dashboard
+              Reports
             </Typography>
             <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
               <IconButton

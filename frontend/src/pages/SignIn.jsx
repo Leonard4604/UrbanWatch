@@ -93,6 +93,7 @@ export default function SignIn() {
         if(!response){
           setSmShow(true)
         } else {
+          localStorage.setItem("email", formData.email)
           navigate('/');
         }
         setFormData({

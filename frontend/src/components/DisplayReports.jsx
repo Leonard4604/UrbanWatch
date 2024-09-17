@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { List, ListItem, ListItemText, Typography, Paper, Button, Divider } from '@mui/material';
+import { List, ListItem, ListItemText, Typography, Paper, Button, Divider, Select, MenuItem, InputLabel, FormControl } from '@mui/material';
 
 export default function DisplayReports() {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showDetails, setShowDetails] = useState({});
+  const [selectedCategory, setSelectedCategory] = useState(''); // State for selected category
 
   useEffect(() => {
     const fetchReports = async () => {
@@ -58,6 +59,15 @@ export default function DisplayReports() {
     }
   };
 
+  const handleCategoryChange = (event) => {
+    setSelectedCategory(event.target.value); // Update selected category
+  };
+
+  // Filter reports based on selected category
+  const filteredReports = selectedCategory
+    ? reports.filter(report => report.category === selectedCategory)
+    : reports;
+
   if (loading) {
     return <Typography variant="h6" align="center">Loading reports...</Typography>;
   }
@@ -67,13 +77,27 @@ export default function DisplayReports() {
       <Typography variant="h4" align="center" gutterBottom>
         Submitted Reports
       </Typography>
-      {reports.length === 0 ? (
+
+      {/* Category Filter */}
+      <FormControl fullWidth style={{ marginBottom: '20px' }}>
+        <InputLabel>Filter by Category</InputLabel>
+        <Select value={selectedCategory} onChange={handleCategoryChange}>
+          <MenuItem value="">All Categories</MenuItem>
+          <MenuItem value="Pothole">Pothole</MenuItem>
+          <MenuItem value="Road Damage">Road Damage</MenuItem>
+          <MenuItem value="Environment">Environment</MenuItem>
+          <MenuItem value="Street lights outage">Street lights outage</MenuItem>
+          <MenuItem value="Other">Other</MenuItem>
+        </Select>
+      </FormControl>
+
+      {filteredReports.length === 0 ? (
         <Typography variant="body1" align="center">
           No reports available.
         </Typography>
       ) : (
         <List>
-          {reports.map((report) => (
+          {filteredReports.map((report) => (
             <React.Fragment key={report.id}>
               <ListItem>
                 <ListItemText
@@ -119,8 +143,9 @@ export default function DisplayReports() {
           ))}
         </List>
       )}
+
       {/* Button to delete all reports */}
-      {reports.length > 0 && (
+      {filteredReports.length > 0 && (
         <Button
           onClick={deleteAllReports}
           variant="contained"
