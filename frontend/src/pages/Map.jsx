@@ -118,7 +118,15 @@ export default function Map() {
     const data = await response.json();
     const notificationsList = data.notifications.map(notification => (
       <ListItem key={notification.id}>
-        <ListItemText primary={notification.title} />
+        <ListItemText primary={
+          <>
+            <Typography variant="body1" component="span" style={{ fontWeight: 'bold' }}>
+              New notification:
+            </Typography>
+            {` ${notification.title}`}
+          </>
+        }
+        />
       </ListItem>
     ));
     setNotifications(notificationsList);
@@ -176,7 +184,12 @@ export default function Map() {
       const response = await fetch(`http://${process.env.IP_ADDRESS}:5177/notifications/`);
       const data = await response.json();
       const notificationsList = data.notifications.map(notification => (
-        <MenuItem key={notification.id}>{notification.title}</MenuItem>
+        <MenuItem key={notification.id}>
+          <Typography variant="body1" component="span" style={{ fontWeight: 'bold' }}>
+            New notification:
+          </Typography>
+          {` ${notification.title}`}
+        </MenuItem>
       ));
       setNotifications(notificationsList);
       setNotificationsCount(data.notifications.length);

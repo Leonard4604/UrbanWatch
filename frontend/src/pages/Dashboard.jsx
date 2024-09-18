@@ -22,6 +22,7 @@ import { useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { List, ListItem, ListItemText, Popover } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 
 const drawerWidth = 240;
 
@@ -111,13 +112,27 @@ export default function Dashboard() {
   const isNotificationsMobileMenuOpen = Boolean(mobileNotificationsMoreAnchorEl);
 
   const [notificationsCount, setNotificationsCount] = useState(0);
+  const handleNotificationClose = (index) => {
+    setNotifications(notifications.filter((_, i) => i !== index));
+  };
 
   const getNotifications = async () => {
     const response = await fetch(`http://${process.env.IP_ADDRESS}:5177/notifications/`);
     const data = await response.json();
     const notificationsList = data.notifications.map(notification => (
-      <ListItem key={notification.id}>
-        <ListItemText primary={notification.title} />
+      <ListItem key={notification.id} secondaryAction={
+        <IconButton edge="end" aria-label="delete" onClick={() => handleNotificationClose(notification.id)}>
+          <CloseIcon />
+        </IconButton>
+      }>
+        <ListItemText primary={
+          <>
+            <Typography variant="body1" component="span" style={{ fontWeight: 'bold' }}>
+              New notification:
+            </Typography>
+            {` ${notification.title}`}
+          </>
+        } />
       </ListItem>
     ));
     setNotifications(notificationsList);
@@ -175,7 +190,20 @@ export default function Dashboard() {
       const response = await fetch(`http://${process.env.IP_ADDRESS}:5177/notifications/`);
       const data = await response.json();
       const notificationsList = data.notifications.map(notification => (
-        <MenuItem key={notification.id}>{notification.title}</MenuItem>
+        <ListItem key={notification.id} secondaryAction={
+          <IconButton edge="end" aria-label="delete" onClick={() => handleNotificationClose(notification.id)}>
+            <CloseIcon />
+          </IconButton>
+        }>
+          <ListItemText primary={
+            <>
+              <Typography variant="body1" component="span" style={{ fontWeight: 'bold' }}>
+                New notification:
+              </Typography>
+              {` ${notification.title}`}
+            </>
+          } />
+        </ListItem>
       ));
       setNotifications(notificationsList);
       setNotificationsCount(data.notifications.length);
