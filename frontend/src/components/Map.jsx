@@ -1,7 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import jwt_decode from 'jwt-decode';
 
 function Map() {
     const mapContainerRef = useRef();
@@ -18,8 +17,8 @@ function Map() {
         dateTime: '', // New field for the date and time
     });
     const [reports, setReports] = useState([]);
-    const url = 'http://localhost:5176/reports/submit';
-    const reportsUrl = 'http://localhost:5176/reports'; // Adjust the URL as needed
+    const url = `http://${process.env.IP_ADDRESS}:5176/reports/submit`;
+    const reportsUrl = `http://${process.env.IP_ADDRESS}:5176/reports`; // Adjust the URL as needed
 
     useEffect(() => {
         // Fetch reports from the backend on component mount
@@ -42,7 +41,7 @@ function Map() {
             if (email) {
                 console.log(email);
                 try {
-                    const response = await fetch(`http://localhost:5175/users/get_by_email/${email}`);
+                    const response = await fetch(`http://${process.env.IP_ADDRESS}:5175/users/get_by_email/${email}`);
                     const data = await response.json();
                     if (data.user) {
                         setFormData(prev => ({
