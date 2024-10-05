@@ -14,6 +14,8 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useState } from 'react';
 import BasicModal from '../components/BasicModal';
 import { useNavigate } from 'react-router-dom';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
 
 function Copyright(props) {
   return (
@@ -30,7 +32,7 @@ function Copyright(props) {
 const defaultTheme = createTheme();
 
 export default function SignUp() {
-    const navigate = useNavigate;
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         email: '',
         firstName: '',
@@ -45,6 +47,22 @@ export default function SignUp() {
     const url = `http://${process.env.IP_ADDRESS}:5175/users/signup`;
 
     const [errors, setErrors] = useState({});
+
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+
+    const handleCloseSnackbar = (event, reason) => {
+      if (reason === 'clickaway') {
+        return;
+      }
+      setOpenSnackbar(false);
+    };
+
+    const navigateToSignIn = () => {
+      setTimeout(() => {
+        navigate('/signin')
+      }, 3000);
+    };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -78,6 +96,8 @@ export default function SignUp() {
     
         // Check if password and confirmPassword match
         if (formData.password !== formData.confirmPassword) {
+          setSnackbarMessage('Password does not match');
+          setOpenSnackbar(true);
           setErrors({
             ...errors,
             confirmPassword: 'Not match with password',
@@ -88,6 +108,8 @@ export default function SignUp() {
         // Check password complexity
         const passwordRegex = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*)(:;._'-]).{8,}$/;
         if (!passwordRegex.test(formData.password)) {
+          setSnackbarMessage('Password must be at least 8 and maximum 30 characters, at least one uppercase letter, one lowercase letter, one number and one special character');
+          setOpenSnackbar(true);
           setErrors({
             ...errors,
             password:
@@ -129,8 +151,9 @@ export default function SignUp() {
                 confirmPassword: '',
               });
               setShowLoginButton(true)
-              setTextModal('Signup successful!')
+              setTextModal('Signup successful! You will be redirected to the sign in page.');
               setSmShow(true)
+              navigateToSignIn();
             } else if (response.status === 400) {
               // Reset the form fields
               setFormData({
@@ -254,9 +277,14 @@ export default function SignUp() {
           </Box>
         </Box>
         <Copyright sx={{ mt: 5 }} />
-        {smShow ? showLoginButton ? <BasicModal setShowModal={setSmShow} text={textModal} title={"Sign Up"} flagCloseFunction={true} closeFunction={showLoginButton ? () => navigate('/login') : undefined}></BasicModal>
+        {smShow ? showLoginButton ? <BasicModal setShowModal={setSmShow} text={textModal} title={"Sign Up"} flagCloseFunction={true} closeFunction={showLoginButton ? () => navigateToSignIn : undefined}></BasicModal>
       : <BasicModal setShowModal={setSmShow} text={textModal} title={"Sign Up"}></BasicModal> : <></>}
       </Container>
+      <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleCloseSnackbar}>
+        <MuiAlert onClose={handleCloseSnackbar} severity="error" sx={{ width: '100%' }}>
+          {snackbarMessage}
+        </MuiAlert>
+      </Snackbar>
     </ThemeProvider>
   );
 }
