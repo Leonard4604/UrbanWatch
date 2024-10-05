@@ -112,14 +112,30 @@ export default function Dashboard() {
   const isNotificationsMobileMenuOpen = Boolean(mobileNotificationsMoreAnchorEl);
 
   const [notificationsCount, setNotificationsCount] = useState(0);
-  const handleNotificationClose = (index) => {
-    setNotifications(notifications.filter((_, i) => i !== index));
+  const handleNotificationClose = async (index) => {
+    setNotifications(prevNotifications => 
+      prevNotifications.filter(notification => notification.key != index)
+    );
+    await fetch(`http://${process.env.IP_ADDRESS}:5177/notifications/${index}`, {
+        method: 'DELETE',
+        credentials: 'include'
+      }
+    );
+    setNotificationsCount(function (prevCount) {
+      if (prevCount > 0) {
+        return (prevCount -= 1);
+      } else {
+        return (prevCount = 0);
+      }
+    });
   };
 
+  const email = localStorage.getItem("email");
+
   const getNotifications = async () => {
-    const response = await fetch(`http://${process.env.IP_ADDRESS}:5177/notifications/`);
+    const response = await fetch(`http://${process.env.IP_ADDRESS}:5177/notifications/get_by_email/${email}`);
     const data = await response.json();
-    const notificationsList = data.notifications.map(notification => (
+    const notificationsList = await data.notifications.map(notification => (
       <ListItem key={notification.id} secondaryAction={
         <IconButton edge="end" aria-label="delete" onClick={() => handleNotificationClose(notification.id)}>
           <CloseIcon />
@@ -187,9 +203,9 @@ export default function Dashboard() {
   const [notifications, setNotifications] = useState([]);
   useEffect(() => {
     const getNotifications = async () => {
-      const response = await fetch(`http://${process.env.IP_ADDRESS}:5177/notifications/`);
+      const response = await fetch(`http://${process.env.IP_ADDRESS}:5177/notifications/get_by_email/${email}`);
       const data = await response.json();
-      const notificationsList = data.notifications.map(notification => (
+      const notificationsList = await data.notifications.map(notification => (
         <ListItem key={notification.id} secondaryAction={
           <IconButton edge="end" aria-label="delete" onClick={() => handleNotificationClose(notification.id)}>
             <CloseIcon />
