@@ -23,6 +23,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { List, ListItem, ListItemText, Popover } from '@mui/material';
 import DisplayReports from '../components/DisplayReports'
+import CloseIcon from '@mui/icons-material/Close';
 
 const drawerWidth = 240;
 
@@ -112,13 +113,41 @@ export default function Reports() {
   const isNotificationsMobileMenuOpen = Boolean(mobileNotificationsMoreAnchorEl);
 
   const [notificationsCount, setNotificationsCount] = useState(0);
+  const handleNotificationClose = async (index) => {
+    setNotifications(prevNotifications => 
+      prevNotifications.filter(notification => notification.key != index)
+    );
+    await fetch(`http://${process.env.IP_ADDRESS}:5177/notifications/${index}`, {
+        method: 'DELETE',
+        credentials: 'include'
+      }
+    );
+    setNotificationsCount(function (prevCount) {
+      if (prevCount > 0) {
+        return (prevCount -= 1);
+      } else {
+        return (prevCount = 0);
+      }
+    });
+  };
 
   const getNotifications = async () => {
-    const response = await fetch(`http://${process.env.IP_ADDRESS}:5177/notifications/`);
+    const response = await fetch(`http://${process.env.IP_ADDRESS}:5177/notifications/get_by_email/${email}`);
     const data = await response.json();
-    const notificationsList = data.notifications.map(notification => (
-      <ListItem key={notification.id}>
-        <ListItemText primary={notification.title} />
+    const notificationsList = await data.notifications.map(notification => (
+      <ListItem key={notification.id} secondaryAction={
+        <IconButton edge="end" aria-label="delete" onClick={() => handleNotificationClose(notification.id)}>
+          <CloseIcon />
+        </IconButton>
+      }>
+        <ListItemText primary={
+          <>
+            <Typography variant="body1" component="span" style={{ fontWeight: 'bold' }}>
+              New notification:
+            </Typography>
+            {` ${notification.title}`}
+          </>
+        } />
       </ListItem>
     ));
     setNotifications(notificationsList);
@@ -171,12 +200,28 @@ export default function Reports() {
   );
 
   const [notifications, setNotifications] = useState([]);
+
+  const email = localStorage.getItem("email");
+
   useEffect(() => {
     const getNotifications = async () => {
-      const response = await fetch(`http://${process.env.IP_ADDRESS}:5177/notifications/`);
+      const response = await fetch(`http://${process.env.IP_ADDRESS}:5177/notifications/get_by_email/${email}`);
       const data = await response.json();
-      const notificationsList = data.notifications.map(notification => (
-        <MenuItem key={notification.id}>{notification.title}</MenuItem>
+      const notificationsList = await data.notifications.map(notification => (
+        <ListItem key={notification.id} secondaryAction={
+          <IconButton edge="end" aria-label="delete" onClick={() => handleNotificationClose(notification.id)}>
+            <CloseIcon />
+          </IconButton>
+        }>
+          <ListItemText primary={
+            <>
+              <Typography variant="body1" component="span" style={{ fontWeight: 'bold' }}>
+                New notification:
+              </Typography>
+              {` ${notification.title}`}
+            </>
+          } />
+        </ListItem>
       ));
       setNotifications(notificationsList);
       setNotificationsCount(data.notifications.length);
