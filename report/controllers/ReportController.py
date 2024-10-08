@@ -34,18 +34,50 @@ def submit_report():
     return jsonify({"message": "Report submitted successfully!"}), 200
 
 
+# def get_reports():
+#     try:
+#         reports = Report.query.order_by(Report.id.asc()).all()
+#         report_list = []
+#         for report in reports:
+#             report_list.append(report.serialize)
+
+#         # if report_list:
+#         return {'reports': report_list}
+#     except Exception as e:
+#         print("Exception:", e)  # Print the specific exception for debugging
+#         return jsonify({"message": "No report found"}), 404
+
 def get_reports():
     try:
-        reports = Report.query.order_by(Report.id.asc()).all()
+        # Filtra i report che non sono né chiusi né risolti
+        reports = Report.query.filter(Report.closed == False, Report.resolved == False).order_by(Report.id.asc()).all()
+
         report_list = []
         for report in reports:
             report_list.append(report.serialize)
 
-        # if report_list:
+        # Se ci sono report, restituirli
         return {'reports': report_list}
     except Exception as e:
         print("Exception:", e)  # Print the specific exception for debugging
         return jsonify({"message": "No report found"}), 404
+
+def get_closed_or_resolved_reports():
+    try:
+        # Filtra i report che sono chiusi o risolti
+        reports = Report.query.filter(
+            (Report.closed == True) | (Report.resolved == True)
+        ).order_by(Report.id.asc()).all()
+
+        report_list = []
+        for report in reports:
+            report_list.append(report.serialize)
+
+        # Se ci sono report, restituirli
+        return {'reports': report_list}
+    except Exception as e:
+        print("Exception:", e)  # Print the specific exception for debugging
+        return jsonify({"message": "No closed or resolved report found"}), 404
 
 
 def delete_report(report_id):
@@ -58,3 +90,37 @@ def delete_report(report_id):
     except Exception as e:
         print("Exception:", e)  # Print the specific exception for debugging
         return jsonify({"message": "Something went wrong"}), 500
+
+def close_report(report_id):
+    try:
+        report = Report.query.filter_by(id=report_id).one()
+        
+        # Ottieni la motivazione dal corpo della richiesta
+        data = request.get_json()
+        motivation = data.get('motivation', '')
+
+        report.closed = True  # Imposta closed a True
+        report.motivation = motivation  # Salva la motivazione
+        db.session.commit()
+
+        return jsonify({"message": "Report closed successfully"}), 200
+    except Exception as e:
+        print("Exception:", e)  # Stampa l'eccezione per il debug
+        return jsonify({"message": "Something went wrong"}), 500
+
+def resolve_report(report_id):
+    try:
+        report = Report.query.get(report_id)
+        if not report:
+            return jsonify({"message": "Report not found"}), 404
+
+        data = request.get_json()
+        report.resolved = data.get('resolved', False)
+        report.motivation = data.get('motivation', '')
+
+        db.session.commit()  # Salva le modifiche nel database
+
+        return jsonify({"message": "Report resolved successfully"}), 200
+    except Exception as e:
+        print("Exception:", e)
+        return jsonify({"message": "Error resolving report"}), 500

@@ -15,11 +15,15 @@ class Report(db.Model):
     category = db.Column(db.String(1000))
     longitude = db.Column(db.Float(precision=14))
     latitude = db.Column(db.Float(precision=14))
+    closed = db.Column(db.Boolean, default=False)
+    resolved = db.Column(db.Boolean, default=False)
+    motivation = db.Column(db.String(1000))
+
 
     def __repr__(self):
-        return f"Report: {self.id, self.email, self.firstName, self.lastName, self.role, self.title, self.body, self.category, self.longitude, self.latitude}"
+        return f"Report: {self.id, self.email, self.firstName, self.lastName, self.role, self.title, self.body, self.category, self.longitude, self.latitude, self.closed, self.resolved, self.motivation}"
 
-    def __init__(self, email, firstName, lastName, role, title, body, category, longitude, latitude):
+    def __init__(self, email, firstName, lastName, role, title, body, category, longitude, latitude, closed, resolved, motivation):
         self.email = email
         self.firstName = firstName
         self.lastName = lastName
@@ -29,6 +33,9 @@ class Report(db.Model):
         self.category = category
         self.longitude = longitude
         self.latitude = latitude
+        self.closed = closed
+        self.resolved = resolved
+        self.motivation = motivation
 
     @property
     def serialize(self):
@@ -42,5 +49,8 @@ class Report(db.Model):
             "body": self.body,
             "category": self.category,
             "longitude": self.longitude,
-            "latitude": self.latitude
+            "latitude": self.latitude,
+            "closed": self.closed,
+            "resolved": self.resolved,
+            "motivation": self.motivation
         }

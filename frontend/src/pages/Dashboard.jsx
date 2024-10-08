@@ -23,6 +23,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { List, ListItem, ListItemText, Popover } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import DashboardReports from '../components/DashboardReports'
 
 const drawerWidth = 240;
 
@@ -104,7 +105,7 @@ export default function Dashboard() {
   const handleMobileMenuOpen = (event) => {
     setMobileMoreAnchorEl(event.currentTarget);
   };
-
+  
   const [anchorNotificationsEl, setNotificationsAnchorEl] = React.useState(null);
   const [mobileNotificationsMoreAnchorEl, setNotificationsMobileMoreAnchorEl] = React.useState(null);
   
@@ -383,6 +384,7 @@ export default function Dashboard() {
           }}
         >
           <Toolbar />
+          <DashboardReports />
         </Box>
       </Box>
     </ThemeProvider>
