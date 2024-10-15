@@ -1,6 +1,6 @@
 FROM python:3.6
 
-WORKDIR /notification
+WORKDIR /follow
 
 ENV PYTHONDONTWRITEBYTECODE 1
 
@@ -17,6 +17,6 @@ COPY . .
 
 RUN pip install -r requirements.txt
 
-EXPOSE 5176
+EXPOSE 5178
 
 CMD ["python", "server.py"]

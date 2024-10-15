@@ -63,6 +63,18 @@ services:
       - postgres
     env_file: .env  # Corrected
 
+  follow:
+    restart: unless-stopped
+    build: ./follow
+    volumes:
+      - ./follow:/follow
+    ports:
+      - 5178:5178
+    depends_on:
+      - postgres
+      - report
+    env_file: .env  # Corrected
+
 volumes:
   pgdata: {}
   pgadmin: {}
