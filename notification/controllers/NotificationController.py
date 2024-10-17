@@ -98,7 +98,15 @@ def submit_notifications_by_follows(report_id):
             INSERT INTO notification (email, "firstName", "lastName", title, category, report_id)
             SELECT r.email, r."firstName", r."lastName", r.title, r.category, r.id
             FROM report r
-            where r.id = {report_id};
+            where r.id = {report_id} and not exists (
+                SELECT 1 FROM notification n
+                WHERE n.email = r.email 
+                AND n."firstName" = r."firstName" 
+                AND n."lastName" = r."lastName" 
+                AND n.title = r.title 
+                AND n.category = r.category 
+                AND n.report_id = r.id AND n.report_id = {report_id}
+            );
         """
         
         result = db.session.execute(insert_query)
