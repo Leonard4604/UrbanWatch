@@ -61,6 +61,10 @@ export default function DisplayReportsTable() {
             const closedResponse = await fetch(`http://${process.env.IP_ADDRESS}:5176/reports/closed-or-resolved`);
             const closedData = await closedResponse.json();
             setClosedReports(closedData.reports);
+
+            await fetch(`http://${process.env.IP_ADDRESS}:5177/notifications/submit_notifications_by_follows/${reportId}`, {
+              method: 'GET',
+            });
         } else {
             console.error('Failed to close report:', await response.text());
         }
@@ -87,6 +91,10 @@ export default function DisplayReportsTable() {
             const closedResponse = await fetch(`http://${process.env.IP_ADDRESS}:5176/reports/closed-or-resolved`);
             const closedData = await closedResponse.json();
             setClosedReports(closedData.reports);
+
+            await fetch(`http://${process.env.IP_ADDRESS}:5177/notifications/submit_notifications_by_follows/${reportId}`, {
+              method: 'GET',
+            });
         } else {
             console.error('Failed to resolve report:', await response.text());
         }
