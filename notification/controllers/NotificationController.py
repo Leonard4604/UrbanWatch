@@ -77,3 +77,34 @@ def get_notifications_by_report_id(report_id):
     except Exception as e:
         print("Exception:", e)  # Print the specific exception for debugging
         return jsonify({"message": "No notification found"}), 404
+    
+def submit_notifications_by_follows(report_id):
+    try:
+        insert_query = f"""
+            INSERT INTO notification (email, "firstName", "lastName", title, category, report_id)
+            SELECT f.email, r."firstName", r."lastName", r.title, r.category, f.report_id 
+            FROM follow f 
+            JOIN report r ON r.id = f.report_id and r.id = {report_id}
+            WHERE NOT EXISTS (
+                SELECT 1 FROM notification n
+                WHERE n.email = f.email 
+                AND n."firstName" = r."firstName" 
+                AND n."lastName" = r."lastName" 
+                AND n.title = r.title 
+                AND n.category = r.category 
+                AND n.report_id = f.report_id AND n.report_id = {report_id}
+            );
+
+            INSERT INTO notification (email, "firstName", "lastName", title, category, report_id)
+            SELECT r.email, r."firstName", r."lastName", r.title, r.category, r.id
+            FROM report r
+            where r.id = {report_id};
+        """
+        
+        result = db.session.execute(insert_query)
+        db.session.commit() 
+
+        return jsonify('Notifications inserted'), 200
+    except Exception as e:
+        print("Exception:", e)  # Print the specific exception for debugging
+        return jsonify({"message": "No follow found"}), 404
