@@ -13,6 +13,9 @@ def submit_report():
     category = request.json['category']
     longitude = request.json['longitude']
     latitude = request.json['latitude']
+    closed = False
+    resolved = False
+    motivation = None
     #address = request.json['address']
     #dateTime = request.json['dateTime']
 
@@ -23,7 +26,7 @@ def submit_report():
         return jsonify({"message": "Report already exist!"}), 400
 
     # create a new report with the form data.
-    new_report = Report(email=email, firstName=firstName, lastName=lastName, role=role, title=title, body=body, category=category, longitude=longitude, latitude=latitude)#,address=address, dateTime=dateTime)
+    new_report = Report(email=email, firstName=firstName, lastName=lastName, role=role, title=title, body=body, category=category, longitude=longitude, latitude=latitude, closed=closed, resolved=resolved, motivation=motivation)#,address=address, dateTime=dateTime)
 
     # add the new report to the database
     db.session.add(new_report)
