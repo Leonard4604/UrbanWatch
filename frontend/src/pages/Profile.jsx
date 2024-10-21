@@ -1,7 +1,8 @@
-import React from 'react';
-import { Container, Typography, Avatar, TextField, Button, Grid, Box } from '@mui/material';
+import React, { useState, useEffect, useContext } from 'react';
+import { Container, Typography, Avatar, TextField, Button, Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { Context } from '../store/appContext';
 
 const StyledContainer = styled(Container)(({ theme }) => ({
   marginTop: theme.spacing(8),
@@ -18,6 +19,45 @@ const StyledAvatar = styled(Avatar)(({ theme }) => ({
 }));
 
 export default function Profile() {
+  const { store } = useContext(Context);
+  const [formData, setFormData] = useState({
+    email: '',
+    firstName: '',
+    lastName: '',
+    password: '',
+    newPassword: '',
+    confirmNewPassword: ''
+  });
+
+  useEffect(() => {
+    const email = sessionStorage.getItem('email');
+    const firstName = sessionStorage.getItem('firstName');
+    const lastName = sessionStorage.getItem('lastName');
+
+    setFormData({
+      email: email || '',
+      firstName: firstName || '',
+      lastName: lastName || '',
+      password: '',
+      newPassword: '',
+      confirmNewPassword: ''
+    });
+  }, []);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    console.log('Profile updated:', formData);
+  };
+
   return (
     <StyledContainer component="main" maxWidth="xs">
       <Box sx={{
@@ -34,45 +74,52 @@ export default function Profile() {
           Profile
         </Typography>
         <Box sx={{ textAlign: 'left', width: '100%', mt: 2 }}>
-        <Button
+          <Button
             startIcon={<ArrowBackIcon />}
             onClick={() => window.history.back()}
-        >
+          >
             Back
-        </Button>
+          </Button>
         </Box>
-        <TextField
-          variant="outlined"
-          margin="normal"
-          required
-          fullWidth
-          id="email"
-          label="Email"
-          name="email"
-          autoComplete="email"
-          autoFocus
-        />
-        <TextField
-          variant="outlined"
-          margin="normal"
-          required
-          fullWidth
-          id="firstName"
-          label="First Name"
-          name="firstName"
-          autoComplete="fname"
-        />
-        <TextField
-          variant="outlined"
-          margin="normal"
-          required
-          fullWidth
-          id="lastName"
-          label="Last Name"
-          name="lastName"
-          autoComplete="lname"
-        />
-        <TextField
+        <form onSubmit={handleSubmit}>
+          <TextField
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            id="email"
+            label="Email"
+            name="email"
+            autoComplete="email"
+            autoFocus
+            value={formData.email}
+            onChange={handleChange}
+          />
+          <TextField
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            id="firstName"
+            label="First Name"
+            name="firstName"
+            autoComplete="fname"
+            value={formData.firstName}
+            onChange={handleChange}
+          />
+          <TextField
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            id="lastName"
+            label="Last Name"
+            name="lastName"
+            autoComplete="lname"
+            value={formData.lastName}
+            onChange={handleChange}
+          />
+          <TextField
             variant="outlined"
             margin="normal"
             required
@@ -82,8 +129,10 @@ export default function Profile() {
             type="password"
             id="password"
             autoComplete="current-password"
-        />
-        <TextField
+            value={formData.password}
+            onChange={handleChange}
+          />
+          <TextField
             variant="outlined"
             margin="normal"
             required
@@ -93,8 +142,10 @@ export default function Profile() {
             type="password"
             id="newPassword"
             autoComplete="new-password"
-        />
-        <TextField
+            value={formData.newPassword}
+            onChange={handleChange}
+          />
+          <TextField
             variant="outlined"
             margin="normal"
             required
@@ -104,16 +155,19 @@ export default function Profile() {
             type="password"
             id="confirmNewPassword"
             autoComplete="confirm-new-password"
-        />
-        <Button
-          type="submit"
-          fullWidth
-          variant="contained"
-          color="primary"
-          sx={{ mt: 3, mb: 2 }}
-        >
-          Update Profile
-        </Button>
+            value={formData.confirmNewPassword}
+            onChange={handleChange}
+          />
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            color="primary"
+            sx={{ mt: 3, mb: 2 }}
+          >
+            Update Profile
+          </Button>
+        </form>
       </Box>
     </StyledContainer>
   );
