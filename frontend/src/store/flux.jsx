@@ -91,6 +91,11 @@ const getState = ({ getStore, getActions, setStore }) => {
 				if (token && token !== "" && token !== undefined) setStore({ token: token })
 			},
 
+			syncRoleFromSessionStorage: () => {
+				const role = sessionStorage.getItem("role");
+				if (role && role !== "" && role !== undefined) setStore({ role: role })
+			},
+
 			toggleSidebar: () => {
                 const store = getStore();
                 setStore({ sidebarOpen: !store.sidebarOpen });

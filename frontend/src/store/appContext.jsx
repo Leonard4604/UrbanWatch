@@ -23,6 +23,7 @@ const injectContext = PassedComponent => {
 
 			state.actions.checkToken();
 			state.actions.syncTokenFromSessionStorage();
+			state.actions.syncRoleFromSessionStorage();
 
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		}, []);
