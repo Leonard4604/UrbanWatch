@@ -4,6 +4,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 	return {
 		store: {
 			token: "",
+			sidebarOpen: false,
 		},
 		actions: {
 			// Use getActions to call a function within a fuction
@@ -85,7 +86,20 @@ const getState = ({ getStore, getActions, setStore }) => {
 			syncTokenFromSessionStorage: () => {
 				const token = sessionStorage.getItem("token");
 				if (token && token !== "" && token !== undefined) setStore({ token: token })
-			}
+			},
+
+			toggleSidebar: () => {
+                const store = getStore();
+                setStore({ sidebarOpen: !store.sidebarOpen });
+            },
+
+            openSidebar: () => {
+                setStore({ sidebarOpen: true });
+            },
+
+            closeSidebar: () => {
+                setStore({ sidebarOpen: false });
+            },
 
 		}
 	};

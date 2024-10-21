@@ -75,12 +75,11 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 const defaultTheme = createTheme();
 
 export default function Map() {
-  const { actions } = useContext(Context);
+  const { store, actions } = useContext(Context);
   const navigate = useNavigate();
 
-  const [open, setOpen] = React.useState(true);
   const toggleDrawer = () => {
-    setOpen(!open);
+    actions.toggleSidebar();
   };
 
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -303,7 +302,7 @@ export default function Map() {
     <ThemeProvider theme={defaultTheme}>
       <Box sx={{ display: 'flex' }}>
         <CssBaseline />
-        <AppBar position="absolute" open={open}>
+        <AppBar position="absolute" open={store.sidebarOpen}>
           <Toolbar
             sx={{
               pr: '24px', // keep right padding when drawer closed
@@ -316,7 +315,7 @@ export default function Map() {
               onClick={toggleDrawer}
               sx={{
                 marginRight: '36px',
-                ...(open && { display: 'none' }),
+                ...(store.sidebarOpen && { display: 'none' }),
               }}
             >
               <MenuIcon />
@@ -372,7 +371,7 @@ export default function Map() {
           {renderMenu}
           {renderNotificationsMenu}
         </AppBar>
-        <Drawer variant="permanent" open={open}>
+        <Drawer variant="permanent" open={store.sidebarOpen}>
           <Toolbar
             sx={{
               display: 'flex',

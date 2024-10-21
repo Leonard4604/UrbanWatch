@@ -23,7 +23,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { List, ListItem, ListItemText, Popover } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import DashboardReports from '../components/DashboardReports'
+import DashboardReports from '../components/DashboardReports';
 
 const drawerWidth = 240;
 
@@ -75,12 +75,11 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 const defaultTheme = createTheme();
 
 export default function Dashboard() {
-  const { actions } = useContext(Context);
+  const { store, actions } = useContext(Context);
   const navigate = useNavigate();
 
-  const [open, setOpen] = React.useState(true);
   const toggleDrawer = () => {
-    setOpen(!open);
+    actions.toggleSidebar();
   };
 
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -300,7 +299,7 @@ export default function Dashboard() {
     <ThemeProvider theme={defaultTheme}>
       <Box sx={{ display: 'flex' }}>
         <CssBaseline />
-        <AppBar position="absolute" open={open}>
+        <AppBar position="absolute" open={store.sidebarOpen}>
           <Toolbar
             sx={{
               pr: '24px', // keep right padding when drawer closed
@@ -313,7 +312,7 @@ export default function Dashboard() {
               onClick={toggleDrawer}
               sx={{
                 marginRight: '36px',
-                ...(open && { display: 'none' }),
+                ...(store.sidebarOpen && { display: 'none' }),
               }}
             >
               <MenuIcon />
@@ -369,7 +368,7 @@ export default function Dashboard() {
           {renderMenu}
           {renderNotificationsMenu}
         </AppBar>
-        <Drawer variant="permanent" open={open}>
+        <Drawer variant="permanent" open={store.sidebarOpen}>
           <Toolbar
             sx={{
               display: 'flex',
