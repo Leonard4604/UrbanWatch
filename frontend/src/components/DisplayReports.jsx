@@ -10,7 +10,7 @@ export default function DisplayReports() {
   useEffect(() => {
     const fetchReports = async () => {
       try {
-        const response = await fetch(`http://${process.env.IP_ADDRESS}:5176/reports/`);
+        const response = await fetch(`http://${process.env.IP_ADDRESS}:5176/reports/get_by_email/${sessionStorage.getItem('email')}`);
         const data = await response.json();
         setReports(data.reports);
         setLoading(false);
