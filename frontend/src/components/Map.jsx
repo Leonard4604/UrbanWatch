@@ -327,6 +327,8 @@ function Map() {
                     [reportId]: newFollowId,
                 }));
             }
+
+            location.reload(); // Reload the page to update the follow buttons
         } catch (error) {
             console.error(`Error ${isFollowing ? 'unfollowing' : 'following'} report:`, error);
             alert(`Failed to ${isFollowing ? 'unfollow' : 'follow'} report: ${error.message}`);
