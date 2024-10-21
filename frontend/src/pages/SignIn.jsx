@@ -34,7 +34,7 @@ function Copyright(props) {
 const defaultTheme = createTheme();
 
 export default function SignIn() {
-  const { actions } = useContext(Context);
+  const { store, actions } = useContext(Context);
   const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
@@ -94,7 +94,11 @@ export default function SignIn() {
           setSmShow(true)
         } else {
           localStorage.setItem("email", formData.email)
-          navigate('/');
+          if (store.role === 1) {
+            navigate('/');
+          } else {
+            navigate('/reports');
+          }
         }
         setFormData({
           email: '',
