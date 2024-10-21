@@ -5,6 +5,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 		store: {
 			token: "",
 			sidebarOpen: false,
+			role: 0,
 		},
 		actions: {
 			// Use getActions to call a function within a fuction
@@ -29,7 +30,9 @@ const getState = ({ getStore, getActions, setStore }) => {
 						sessionStorage.setItem("email", responseData.email);
 						sessionStorage.setItem("firstName", responseData.firstName);
 						sessionStorage.setItem("lastName", responseData.lastName);
+						sessionStorage.setItem("role", responseData.role);
 						setStore({ token: accessToken })
+						setStore({ role: responseData.role })
 						window.alert("Welcome Back " + responseData.firstName + "!")
 						return true;
 					} else if (response.status === 404) {
