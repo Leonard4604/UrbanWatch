@@ -29,7 +29,8 @@ def login():
                     "email": user.email,
                     "firstName": user.firstName,
                     "lastName": user.lastName,
-                    "access_token": access_token}), 200
+                    "access_token": access_token,
+                    "role": user.role}), 200
 
 
 @jwt_required()
