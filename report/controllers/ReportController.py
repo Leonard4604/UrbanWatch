@@ -127,3 +127,16 @@ def resolve_report(report_id):
     except Exception as e:
         print("Exception:", e)
         return jsonify({"message": "Error resolving report"}), 500
+    
+
+def get_reports_by_email(email):
+    try:
+        reports = Report.query.filter_by(email=email).filter(Report.closed == False, Report.resolved == False).order_by(Report.id.asc()).all()
+        report_list = []
+        for report in reports:
+            report_list.append(report.serialize)
+        
+        return {'reports': report_list}
+    except Exception as e:
+        print("Exception:", e)  # Print the specific exception for debugging
+        return jsonify({"message": "No report found"}), 404
