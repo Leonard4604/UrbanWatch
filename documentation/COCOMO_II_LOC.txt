@@ -1,0 +1,47 @@
+FOR WINDOWS:
+
+PS C:\Users\gianm\Desktop\UrbanWatch> git ls-files '*.py', '*.html', '*.css', '*.jsx' | ForEach-Object {
+>>     $lines = (Get-Content $_ | Measure-Object -Line).Lines
+>>     $Total += $lines
+>>     "{0} : {1}" -f $_, $lines
+>> }
+auth/config.py : 10
+auth/controllers/UserController.py : 127
+auth/models/user.py : 29
+auth/routes/user_bp.py : 13
+auth/server.py : 33
+follow/config.py : 9
+follow/controllers/FollowController.py : 39
+follow/models/follow.py : 26
+follow/routes/follow_bp.py : 7
+follow/server.py : 21
+frontend/index.html : 14
+frontend/src/App.css : 4
+frontend/src/App.jsx : 65
+frontend/src/components/BasicModal.jsx : 45
+frontend/src/components/DashboardReports.jsx : 721
+frontend/src/components/DisplayReports.jsx : 147
+frontend/src/components/Map.jsx : 439
+frontend/src/components/listItems.jsx : 42
+frontend/src/main.jsx : 8
+frontend/src/pages/Dashboard.jsx : 383
+frontend/src/pages/Map.jsx : 384
+frontend/src/pages/NotFound.jsx : 47
+frontend/src/pages/Profile.jsx : 165
+frontend/src/pages/Reports.jsx : 382
+frontend/src/pages/SignIn.jsx : 184
+frontend/src/pages/SignUp.jsx : 275
+frontend/src/store/appContext.jsx : 32
+frontend/src/store/flux.jsx : 92
+notification/config.py : 9
+notification/controllers/NotificationController.py : 101
+notification/models/notification.py : 32
+notification/routes/notification_bp.py : 12
+notification/server.py : 21
+report/config.py : 9
+report/controllers/ReportController.py : 114
+report/models/report.py : 49
+report/routes/report_bp.py : 10
+report/server.py : 21
+PS C:\Users\gianm\Desktop\UrbanWatch> "Totale: {0}" -f $Total
+Totale: 4121
