@@ -8,4 +8,4 @@ class ApplicationConfig:
     SQLALCHEMY_ECHO = True	
     
     #connect to local db
-    SQLALCHEMY_DATABASE_URI = os.environ["DB_URL"]
+    SQLALCHEMY_DATABASE_URI = os.environ["AUTH_DB_URL"]
