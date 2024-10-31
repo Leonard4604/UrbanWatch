@@ -83,8 +83,8 @@ def submit_notifications_by_follows(report_id):
         insert_query = f"""
             INSERT INTO notification (email, "firstName", "lastName", title, category, report_id)
             SELECT f.email, r."firstName", r."lastName", r.title, r.category, f.report_id 
-            FROM follow f 
-            JOIN report r ON r.id = f.report_id and r.id = {report_id}
+            FROM public.follow f 
+            JOIN public.report r ON r.id = f.report_id and r.id = {report_id}
             WHERE NOT EXISTS (
                 SELECT 1 FROM notification n
                 WHERE n.email = f.email 
@@ -97,7 +97,7 @@ def submit_notifications_by_follows(report_id):
 
             INSERT INTO notification (email, "firstName", "lastName", title, category, report_id)
             SELECT r.email, r."firstName", r."lastName", r.title, r.category, r.id
-            FROM report r
+            FROM public.report r
             where r.id = {report_id} and not exists (
                 SELECT 1 FROM notification n
                 WHERE n.email = r.email 
