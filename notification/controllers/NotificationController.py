@@ -8,17 +8,21 @@ def submit_notification():
     firstName = request.json['firstName']
     lastName = request.json['lastName']
     title = request.json['title']
+    body = request.json['body']
     category = request.json['category']
     report_id = request.json['report_id']
+    closed = request.json['closed']
+    resolved = request.json['resolved']
+    motivation = request.json['motivation']
 
     # if this returns a notification, then the notification already exists in database
-    notification = Notification.query.filter_by(email=email, firstName=firstName, lastName=lastName, title=title, category=category, report_id=report_id).first()
+    notification = Notification.query.filter_by(email=email, firstName=firstName, lastName=lastName, title=title, body=body, category=category, report_id=report_id, closed=closed, resolved=resolved, motivation=motivation).first()
 
     if notification:  # if a notification is found, we want to notify it
         return jsonify({"message": "Notification already exist!"}), 400
 
     # create a new notification with the form data.
-    new_notification = Notification(email=email, firstName=firstName, lastName=lastName, title=title, category=category, report_id=report_id)
+    new_notification = Notification(email=email, firstName=firstName, lastName=lastName, title=title, body=body, category=category, report_id=report_id, closed=closed, resolved=resolved, motivation=motivation)
 
     # add the new notification to the database
     db.session.add(new_notification)
@@ -81,8 +85,8 @@ def get_notifications_by_report_id(report_id):
 def submit_notifications_by_follows(report_id):
     try:
         insert_query = f"""
-            INSERT INTO notification (email, "firstName", "lastName", title, category, report_id)
-            SELECT f.email, r."firstName", r."lastName", r.title, r.category, f.report_id 
+            INSERT INTO notification (email, "firstName", "lastName", title, body, category, report_id, closed, resolved, motivation)
+            SELECT f.email, r."firstName", r."lastName", r.title, r.body, r.category, f.report_id, r.closed, r.resolved, r.motivation
             FROM public.follow f 
             JOIN public.report r ON r.id = f.report_id and r.id = {report_id}
             WHERE NOT EXISTS (
@@ -91,12 +95,16 @@ def submit_notifications_by_follows(report_id):
                 AND n."firstName" = r."firstName" 
                 AND n."lastName" = r."lastName" 
                 AND n.title = r.title 
+                AND n.body = r.body
                 AND n.category = r.category 
                 AND n.report_id = f.report_id AND n.report_id = {report_id}
+                AND n.closed = r.closed
+                AND n.resolved = r.resolved
+                AND n.motivation = r.motivation
             );
 
-            INSERT INTO notification (email, "firstName", "lastName", title, category, report_id)
-            SELECT r.email, r."firstName", r."lastName", r.title, r.category, r.id
+            INSERT INTO notification (email, "firstName", "lastName", title, body, category, report_id, closed, resolved, motivation)
+            SELECT r.email, r."firstName", r."lastName", r.title, r.body, r.category, r.id, r.closed, r.resolved, r.motivation
             FROM public.report r
             where r.id = {report_id} and not exists (
                 SELECT 1 FROM notification n
@@ -104,8 +112,12 @@ def submit_notifications_by_follows(report_id):
                 AND n."firstName" = r."firstName" 
                 AND n."lastName" = r."lastName" 
                 AND n.title = r.title 
+                AND n.body = r.body
                 AND n.category = r.category 
                 AND n.report_id = r.id AND n.report_id = {report_id}
+                AND n.closed = r.closed
+                AND n.resolved = r.resolved
+                AND n.motivation = r.motivation
             );
         """
         

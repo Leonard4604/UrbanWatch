@@ -139,12 +139,34 @@ export default function Map() {
           <CloseIcon />
         </IconButton>
       }>
-        <ListItemText primary={
+      <ListItemText primary={
           <>
             <Typography variant="body1" component="span" style={{ fontWeight: 'bold' }}>
               New notification:
             </Typography>
-            {` ${notification.title}`}
+            <Typography variant="body1" component="span" style={{ fontWeight: 'bold' }}>
+              {` ${notification.title}`}
+            </Typography>
+            {` in category `}
+            <Typography variant="body1" component="span" style={{ fontWeight: 'bold' }}>
+              {`${notification.category}`}
+            </Typography>
+            {` in `}
+            <Typography variant="body1" component="span" style={{ fontWeight: 'bold' }}>
+              {`${notification.body}`}
+            </Typography>
+            {` has been `}
+            <Typography variant="body1" component="span" style={{ fontWeight: 'bold' }}>
+              {`${notification.closed ? 'closed' : notification.resolved ? 'resolved' : ''}.`}
+            </Typography>
+            <Box>
+              <Typography variant="body1" component="span">
+                {`Motivation: `}
+              </Typography>
+              <Typography variant="body1" component="span" style={{ fontWeight: 'bold' }}>
+                {`${notification.motivation}`}
+              </Typography>
+            </Box>
           </>
         } />
       </ListItem>
